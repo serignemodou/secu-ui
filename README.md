@@ -1,371 +1,206 @@
-# vulnerable-app & attacker-app
+# Goof - Snyk's vulnerable demo app
+[![Known Vulnerabilities](https://snyk.io/test/github/snyk/goof/badge.svg?style=flat-square)](https://snyk.io/test/github/snyk/goof)
 
-## ** DEPRECATED **
+A vulnerable Node.js demo application, based on the [Dreamers Lab tutorial](http://dreamerslab.com/blog/en/write-a-todo-list-with-express-and-mongodb/).
 
-This project has been deprecated and archived. This means that no issues, PRs or other maintenance actions will be performed on it.
+## Features
 
-If you came here from a reference to this repository I recommend checking out the following more recent project that demonstrates the security topics this one originally covered.
+This vulnerable app includes the following capabilities to experiment with:
+* [Exploitable packages](#exploiting-the-vulnerabilities) with known vulnerabilities
+* [Docker Image Scanning](#docker-image-scanning) for base images with known vulnerabilities in system libraries
+* [Runtime alerts](#runtime-alerts) for detecting an invocation of vulnerable functions in open source dependencies
 
-[Angular-CosmosDB](https://github.com/Azure-Samples/angular-cosmosdb/tree/insecure-heroes)
+## Running
+```bash
+mongod &
 
-## What is this project?
-
-There are two applications within this repository that were generated from the HotTowel Angular generator. The main one is the `vulnerable-app` which is found in the `/src` folder. This application was built intentionally built out with vulnerabilities to easily demonstrate how they are performed by an attacker. The secondary application is the `attacker-app` found in the `/attacker-app` folder and it was built out to assist in demonstrating an attacker's website that is exploiting the vulnerabilities in the `vulnerable-app`.
-
-## Requirements
-
-1. [Node.js v6.11.0](https://nodejs.org/en/download/)
-2. [NPM v5.1.0](https://docs.npmjs.com/getting-started/installing-node)
-
-> Straying from these versions may result in unanticipated behavior and it cannot be guaranteed the app will produce the expected results.
-
-## How to Run Both Apps
-
-1. Open your terminal and `cd` to the root folder for this repository
-2. Execute `npm install -g bower gulp nodemon`
-3. Execute `npm install`
-4. Execute `bower install`
-5. Run `gulp serve-dev` to spin up the `vulnerable-app`
-6. You should see your browser open up a new tab to the following URL: [http://localhost:3000](http://localhost:3000)
-7. Open a new terminal window or tab and `cd` to the `/attacker-app` folder from the root location of this repository
-8. Run `gulp serve-dev`
-9. You should see your browser open up another new tab to the following URL: [http://localhost:3002](http://localhost:3002)
-
-## How to Test
-
-### XSS
-
-The following steps will demonstrate a simple example of being able to escape the context of where the search input text is printed on screen and used to execute an injectable script that the browser will execute.
-
-1. In the tab that's running the `vulnerable-app`, click on the option `XSS-Search` in the navigation bar
-2. In the "Search" field enter the following text: `<script>alert('Malicious Script!');</script>`
-3. Click the "Submit" button
-4. You should see an alert message pop up on your screen with the message "Malicious Script!"
-
-### CSRF
-
-The following steps will demonstrate a simple example of being able to submit requests on behalf of the logged in user within the vulnerable-app, but executed from the `attacker-app`.
-
-1. In the tab that's running the `vulnerable-app`, click on the option `CSRF` in the navigation bar and take note of the "User Profile" section within the view
-
-    > By default, the user's "First Name" should show the value of `Jim` and the "Last Name" as the value of `Bob`
-
-2. In the tab that's running the `attacker-app`, click on the option `CSRF-Attack` in the navigation bar. This will immediately execute the CSRF attack and display the forged POST data
-3. Go back to the tab that's running the `vulnerable-app` and make sure you're still in the `CSRF` view
-4. Click the "Get Latest User Profile" button and you should see that the user's profile was changed due to the CSRF attack
-
-    > The user's "First Name" should show the value of `Evil` and the "Last Name" as the value of `Hacker` now
-
-### Clickjacking
-
-The following steps will demonstrate a simple example of clickjacking by tricking the user of the `vulnerable-app` to click a seemingly harmless button in the `attacker-app` that actually executes an action in the `vulnerable-app`.
-
-1. In the tab that's running the `attacker-app`, click on the option `Clickjacking-Attack`
-
-    > You should be able to see that the `vulnerable-app` is loaded in the view, but with a low opacity
-
-2. Open the developer tools for the browser you're using and view the console
-3. Click the "Click to see awesome dog backflips!" button
-
-    > You should see a message in the console with the following text: "The profile was successfully deleted!"
-
-This example demonstrates that while the user thinks they're clicking on a button that will show them "awesome dog backflips", they're actually clicking on the "Delete Sensitive Information!" button found in the `vulnerable-app`. This is accomplished because the `attacker-app` can load the `vulnerable-app` in an `iframe` html element, style the iframe so it's not visible at all (in this case it is somewhat visible for demonstration purposes) and actually a "layer" deep from other html elements within the view, and place "clickbait" type elements on top of the iframe and over the areas the attacker wants the user to click within the iframe instead.
-
-## References/Further Reading
-
-1. [OWASP](https://www.owasp.org/)
-    1. [Cross-site Scripting Defense Cheat Sheet][1]
-    1. [Cross-site Request Forgery Defense Cheat Sheet][2]
-    1. [Clickjacking Defense Cheat Sheet](https://www.owasp.org/index.php/Clickjacking_Defense_Cheat_Sheet)
-2. [HTML5Rocks - CSP](http://www.html5rocks.com/en/tutorials/security/content-security-policy/)
-3. [Angular \$sanitize](https://docs.angularjs.org/api/ngSanitize/service/$sanitize)
-4. [Angular \$sce](https://docs.angularjs.org/api/ng/service/$sce)
-5. [xss-filters](https://www.npmjs.com/package/xss-filters)
-6. [lusca](https://www.npmjs.com/package/lusca)
-
-[1]: https://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet
-[2]: https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)_Prevention_Cheat_Sheet
-
----
-
-**Generated from HotTowel Angular**
-
-> _Opinionated Angular style guide for teams by [@john_papa](//twitter.com/john_papa)_
-
-> More details about the styles and patterns used in this app can be found in my [Angular Style Guide](https://github.com/johnpapa/angularjs-styleguide) and my [Angular Patterns: Clean Code](http://jpapa.me/ngclean) course at [Pluralsight](http://pluralsight.com/training/Authors/Details/john-papa) and working in teams.
-
-## Prerequisites
-
-1. Install [Node.js](http://nodejs.org)
-
--   on OSX use [homebrew](http://brew.sh) `brew install node`
--   on Windows use [chocolatey](https://chocolatey.org/) `choco install nodejs`
-
-2. Install Yeoman `npm install -g yo`
-
-3. Install these NPM packages globally
-
-    ```bash
-    npm install -g bower gulp nodemon
-    ```
-
-    > Refer to these [instructions on how to not require sudo](https://github.com/sindresorhus/guides/blob/master/npm-global-without-sudo.md)
-
-## Running HotTowel
-
-### Linting
-
--   Run code analysis using `gulp vet`. This runs jshint, jscs, and plato.
-
-### Tests
-
--   Run the unit tests using `gulp test` (via karma, mocha, sinon).
-
-### Running in dev mode
-
--   Run the project with `gulp serve-dev`
-
--   opens it in a browser and updates the browser with any files changes.
-
-### Building the project
-
--   Build the optimized project using `gulp build`
--   This create the optimized code for the project and puts it in the build folder
-
-### Running the optimized code
-
--   Run the optimize project from the build folder with `gulp serve-build`
-
-## Exploring HotTowel
-
-HotTowel Angular starter project
-
-### Structure
-
-The structure also contains a gulpfile.js and a server folder. The server is there just so we can serve the app using node. Feel free to use any server you wish.
-
-    /src
-    	/client
-    		/app
-    		/content
-
-### Installing Packages
-
-When you generate the project it should run these commands, but if you notice missing packages, run these again:
-
--   `npm install`
--   `bower install`
-
-### The Modules
-
-The app has 4 feature modules and depends on a series of external modules and custom but cross-app modules
-
+git clone https://github.com/snyk/goof.git
+npm install
+npm start
 ```
-app --> [
-        app.admin --> [
-            app.core,
-            app.widgets
-        ],
-        app.dashboard --> [
-            app.core,
-            app.widgets
-        ],
-        app.layout --> [
-            app.core
-        ],
-        app.widgets,
-		app.core --> [
-			ngAnimate,
-			ngSanitize,
-			ui.router,
-			blocks.exception,
-			blocks.logger,
-			blocks.router
-		]
-    ]
+This will run Goof locally, using a local mongo on the default port and listening on port 3001 (http://localhost:3001)
+
+## Running with docker-compose
+```bash
+docker-compose up --build
+docker-compose down
 ```
 
-#### core Module
+### Heroku usage
+Goof requires attaching a MongoLab service to be deployed as a Heroku app. 
+That sets up the MONGOLAB_URI env var so everything after should just work. 
 
-Core modules are ones that are shared throughout the entire application and may be customized for the specific application. Example might be common data services.
+### CloudFoundry usage
+Goof requires attaching a MongoLab service and naming it "goof-mongo" to be deployed on CloudFoundry. 
+The code explicitly looks for credentials to that service. 
 
-This is an aggregator of modules that the application will need. The `core` module takes the blocks, common, and Angular sub-modules as dependencies.
+### Cleanup
+To bulk delete the current list of TODO items from the DB run:
+```bash
+npm run cleanup
+```
 
-#### blocks Modules
+## Exploiting the vulnerabilities
 
-Block modules are reusable blocks of code that can be used across projects simply by including them as dependencies.
+This app uses npm dependencies holding known vulnerabilities,
+as well as insecure code that introduces code-level vulnerabilities.
 
-##### blocks.logger Module
+The `exploits/` directory includes a series of steps to demonstrate each one.
 
-The `blocks.logger` module handles logging across the Angular app.
+### Vulnerabilities in open source dependencies
 
-##### blocks.exception Module
+Here are the exploitable vulnerable packages:
+- [Mongoose - Buffer Memory Exposure](https://snyk.io/vuln/npm:mongoose:20160116) - requires a version <= Node.js 8. For the exploit demo purposes, one can update the Dockerfile `node` base image to use `FROM node:6-stretch`.
+- [st - Directory Traversal](https://snyk.io/vuln/npm:st:20140206)
+- [ms - ReDoS](https://snyk.io/vuln/npm:ms:20151024)
+- [marked - XSS](https://snyk.io/vuln/npm:marked:20150520)
 
-The `blocks.exception` module handles exceptions across the Angular app.
+### Vulnerabilities in code
 
-It depends on the `blocks.logger` module, because the implementation logs the exceptions.
+* Open Redirect
+* NoSQL Injection
+* Code Injection
+* Command execution
+* Cross-site Scripting (XSS)
+* Information exposure via Hardcoded values in code
+* Security misconfiguration exposes server information 
+* Insecure protocol (HTTP) communication 
 
-##### blocks.router Module
+#### Code injection
 
-The `blocks.router` module contains a routing helper module that assists in adding routes to the \$routeProvider.
+The page at `/account_details` is rendered as an Handlebars view.
 
-## Gulp Tasks
+The same view is used for both the GET request which shows the account details, as well as the form itself for a POST request which updates the account details. A so-called Server-side Rendering.
 
-### Task Listing
+The form is completely functional. The way it works is, it receives the profile information from the `req.body` and passes it, as-is to the template. This however means, that the attacker is able to control a variable that flows directly from the request into the view template library.
 
--   `gulp help`
+You'd think that what's the worst that can happen because we use a validation to confirm the expected input, however the validation doesn't take into account a new field that can be added to the object, such as `layout`, which when passed to a template language, could lead to Local File Inclusion (Path Traversal) vulnerabilities. Here is a proof-of-concept showing it:
 
-    Displays all of the available gulp tasks.
+```sh
+curl -X 'POST' --cookie c.txt --cookie-jar c.txt -H 'Content-Type: application/json' --data-binary '{"username": "admin@snyk.io", "password": "SuperSecretPassword"}' 'http://localhost:3001/login'
+```
 
-### Code Analysis
+```sh
+curl -X 'POST' --cookie c.txt --cookie-jar c.txt -H 'Content-Type: application/json' --data-binary '{"email": "admin@snyk.io", "firstname": "admin", "lastname": "admin", "country": "IL", "phone": "+972551234123",  "layout": "./../package.json"}' 'http://localhost:3001/account_details'
+```
 
--   `gulp vet`
+Actually, there's even another vulnerability in this code.
+The `validator` library that we use has several known regular expression denial of service vulnerabilities. One of them, is associated with the email regex, which if validated with the `{allow_display_name: true}` option then we can trigger a denial of service for this route:
 
-    Performs static code analysis on all javascript files. Runs jshint and jscs.
+```sh
+curl -X 'POST' -H 'Content-Type: application/json' --data-binary "{\"email\": \"`seq -s "" -f "<" 100000`\"}" 'http://localhost:3001/account_details'
+```
 
--   `gulp vet --verbose`
+The `validator.rtrim()` sanitizer is also vulnerable, and we can use this to create a similar denial of service attack:
 
-    Displays all files affected and extended information about the code analysis.
+```sh
+curl -X 'POST' -H 'Content-Type: application/json' --data-binary "{\"email\": \"someone@example.com\", \"country\": \"nop\", \"phone\": \"0501234123\", \"lastname\": \"nop\", \"firstname\": \"`node -e 'console.log(" ".repeat(100000) + "!")'`\"}" 'http://localhost:3001/account_details'
+```
 
--   `gulp plato`
+#### NoSQL injection
 
-    Performs code analysis using plato on all javascript files. Plato generates a report in the reports folder.
+A POST request to `/login` will allow for authentication and signing-in to the system as an administrator user.
+It works by exposing `loginHandler` as a controller in `routes/index.js` and uses a MongoDB database and the `User.find()` query to look up the user's details (email as a username and password). One issue is that it indeed stores passwords in plaintext and not hashing them. However, there are other issues in play here.
 
-### Testing
 
--   `gulp serve-specs`
+We can send a request with an incorrect password to see that we get a failed attempt
+```sh
+echo '{"username":"admin@snyk.io", "password":"WrongPassword"}' | http --json $GOOF_HOST/login -v
+```
 
-    Serves and browses to the spec runner html page and runs the unit tests in it. Injects any changes on the fly and re runs the tests. Quick and easy view of tests as an alternative to terminal via `gulp test`.
+And another request, as denoted with the following JSON request to sign-in as the admin user works as expected:
+```sh
+echo '{"username":"admin@snyk.io", "password":"SuperSecretPassword"}' | http --json $GOOF_HOST/login -v
+```
 
--   `gulp test`
+However, what if the password wasn't a string? what if it was an object? Why would an object be harmful or even considered an issue?
+Consider the following request:
+```sh
+echo '{"username": "admin@snyk.io", "password": {"$gt": ""}}' | http --json $GOOF_HOST/login -v
+```
 
-    Runs all unit tests using karma runner, mocha, chai and sinon with phantomjs. Depends on vet task, for code analysis.
+We know the username, and we pass on what seems to be an object of some sort.
+That object structure is passed as-is to the `password` property and has a specific meaning to MongoDB - it uses the `$gt` operation which stands for `greater than`. So, we in essence tell MongoDB to match that username with any record that has a password that is greater than `empty string` which is bound to hit a record. This introduces the NoSQL Injection vector.
 
--   `gulp test --startServers`
+#### Open redirect
 
-    Runs all unit tests and midway tests. Cranks up a second node process to run a server for the midway tests to hit a web api.
+The `/admin` view introduces a `redirectPage` query path, as follows in the admin view:
 
--   `gulp autotest`
+```
+<input type="hidden" name="redirectPage" value="<%- redirectPage %>" />
+```
 
-    Runs a watch to run all unit tests.
+One fault here is that the `redirectPage` is rendered as raw HTML and not properly escaped, because it uses `<%- >` instead of `<%= >`. That itself, introduces a Cross-site Scripting (XSS) vulnerability via:
 
--   `gulp autotest --startServers`
+```
+http://localhost:3001/login?redirectPage="><script>alert(1)</script>
+```
 
-    Runs a watch to run all unit tests and midway tests. Cranks up a second node process to run a server for the midway tests to hit a web api.
+To exploit the open redirect, simply provide a URL such as `redirectPage=https://google.com` which exploits the fact that the code doesn't enforce local URLs in `index.js:72`.
 
-### Cleaning Up
+#### Hardcoded values - session information
 
--   `gulp clean`
+The application initializes a cookie-based session on `app.js:40` as follows:
 
-    Remove all files from the build and temp folders
+```js
+app.use(session({
+  secret: 'keyboard cat',
+  name: 'connect.sid',
+  cookie: { secure: true }
+}))
+```
 
--   `gulp clean-images`
+As you can see, the session `secret` used to sign the session is a hardcoded sensitive information inside the code.
 
-    Remove all images from the build folder
+First attempt to fix it, can be to move it out to a config file such as:
+```js
+module.exports = {
+    cookieSecret: `keyboard cat`
+}
+```
 
--   `gulp clean-code`
+And then require the configuration file and use it to initialize the session.
+However, that still maintains the secret information inside another file, and Snyk Code will warn you about it.
 
-    Remove all javascript and html from the build folder
+Another case we can discuss here in session management, is that the cookie setting is initialized with `secure: true` which means it will only be transmitted over HTTPS connections. However, there's no `httpOnly` flag set to true, which means that the default false value of it makes the cookie accessible via JavaScript. Snyk Code highlights this potential security misconfiguration so we can fix it. We can note that Snyk Code shows this as a quality information, and not as a security error.
 
--   `gulp clean-fonts`
+Snyk Code will also find hardcoded secrets in source code that isn't part of the application logic, such as `tests/` or `examples/` folders. We have a case of that in this application with the `tests/authentication.component.spec.js` file. In the finding, Snyk Code will tag it as `InTest`, `Tests`, or `Mock`, which help us easily triage it and indeed ignore this finding as it isn't actually a case of information exposure.
 
-    Remove all fonts from the build folder
+## Docker Image Scanning
 
--   `gulp clean-styles`
+The `Dockerfile` makes use of a base image (`node:6-stretch`) that is known to have system libraries with vulnerabilities.
 
-    Remove all styles from the build folder
+To scan the image for vulnerabilities, run:
+```bash
+snyk test --docker node:6-stretch --file=Dockerfile
+```
 
-### Fonts and Images
+To monitor this image and receive alerts with Snyk:
+```bash
+snyk monitor --docker node:6-stretch
+```
 
--   `gulp fonts`
+## Runtime Alerts
 
-    Copy all fonts from source to the build folder
+Snyk provides the ability to monitor application runtime behavior and detect an invocation of a function is known to be vulnerable and used within open source dependencies that the application makes use of.
 
--   `gulp images`
+The agent is installed and initialized in [app.js](./app.js#L5).
 
-    Copy all images from source to the build folder
+For the agent to report back to your snyk account on the vulnerabilities it detected it needs to know which project on Snyk to associate with the monitoring. Due to that, we need to provide it with the project id through an environment variable `SNYK_PROJECT_ID`
 
-### Styles
+To run the Node.js app with runtime monitoring:
+```bash
+SNYK_PROJECT_ID=<PROJECT_ID> npm start
+```
 
--   `gulp styles`
+** The app will continue to work normally even if not provided a project id
 
-    Compile less files to CSS, add vendor prefixes, and copy to the build folder
+## Fixing the issues
+To find these flaws in this application (and in your own apps), run:
+```
+npm install -g snyk
+snyk wizard
+```
 
-### Bower Files
-
--   `gulp wiredep`
-
-    Looks up all bower components' main files and JavaScript source code, then adds them to the `index.html`.
-
-    The `.bowerrc` file also runs this as a postinstall task whenever `bower install` is run.
-
-### Angular HTML Templates
-
--   `gulp templatecache`
-
-    Create an Angular module that adds all HTML templates to Angular's \$templateCache. This pre-fetches all HTML templates saving XHR calls for the HTML.
-
--   `gulp templatecache --verbose`
-
-    Displays all files affected by the task.
-
-### Serving Development Code
-
--   `gulp serve-dev`
-
-    Serves the development code and launches it in a browser. The goal of building for development is to do it as fast as possible, to keep development moving efficiently. This task serves all code from the source folders and compiles less to css in a temp folder.
-
--   `gulp serve-dev --nosync`
-
-    Serves the development code without launching the browser.
-
--   `gulp serve-dev --debug`
-
-    Launch debugger with node-inspector.
-
--   `gulp serve-dev --debug-brk`
-
-    Launch debugger and break on 1st line with node-inspector.
-
-### Building Production Code
-
--   `gulp optimize`
-
-    Optimize all javascript and styles, move to a build folder, and inject them into the new index.html
-
--   `gulp build`
-
-    Copies all fonts, copies images and runs `gulp optimize` to build the production code to the build folder.
-
-### Serving Production Code
-
--   `gulp serve-build`
-
-    Serve the optimized code from the build folder and launch it in a browser.
-
--   `gulp serve-build --nosync`
-
-    Serve the optimized code from the build folder and manually launch the browser.
-
--   `gulp serve-build --debug`
-
-    Launch debugger with node-inspector.
-
--   `gulp serve-build --debug-brk`
-
-    Launch debugger and break on 1st line with node-inspector.
-
-### Bumping Versions
-
--   `gulp bump`
-
-    Bump the minor version using semver.
-    --type=patch // default
-    --type=minor
-    --type=major
-    --type=pre
-    --ver=1.2.3 // specific version
-
-## License
-
-MIT
+In this application, the default `snyk wizard` answers will fix all the issues.
+When the wizard is done, restart the application and run the exploits again to confirm they are fixed.
